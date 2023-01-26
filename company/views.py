@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializer import Orderserializer,Orderstatusserializer
+from .serializer import Orderserializer,Orderstatusserializer,Userseralizer
 from .models import order
 from djwebhooks.decorators import hook
 import asyncio
@@ -12,8 +12,9 @@ from djwebhooks.models import WebhookTarget
 
 @api_view(["POST"])
 def merchent_for_pay(request):
+    user=Userseralizer(user=request.user)
     sera=Orderserializer(data=request.data)
-    if sera.is_valid():
+    if sera.is_valid() and user.is_valid():
         ser=sera.save()
         return  Response(sera.data,status=status.HTTP_200_OK)
     return  Response(status=status.HTTP_400_BAD_REQUEST)
